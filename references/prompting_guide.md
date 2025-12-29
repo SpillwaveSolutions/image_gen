@@ -1,6 +1,6 @@
 # Guide to Creating Compelling Article Images with Imagen
 
-This guide provides instructions and best practices for using the `imagen` command-line tool to create high-quality images for your articles, including cover images and in-article illustrations.
+This guide provides instructions and best practices for using the `imagen` command-line tool to create high-quality images for technical articles, including cover images and in-article illustrations.
 
 ## 1. Basic Usage
 
@@ -11,12 +11,12 @@ imagen generate "YOUR PROMPT HERE" --output FILENAME.png
 ```
 
 -   **`imagen generate`**: The command to start the image generation process.
--   **`"YOUR PROMPT HERE"`**: A detailed description of the image you want to create. This is the most important part.
+-   **`"YOUR PROMPT HERE"`**: A detailed description of the desired image. This is the most important part.
 -   **`--output FILENAME.png`**: The flag to specify the name of the output image file.
 
 ## 2. The Art of the Prompt: Core Principles
 
-The quality of your image is directly proportional to the quality of your prompt. The model used (`gemini-2.5-flash-image`) is powerful, but it needs clear instructions.
+Image quality correlates directly with prompt quality. The model used (`gemini-2.5-flash-image`) is powerful, but requires clear instructions.
 
 ### Principle 1: Be Specific and Detailed
 Avoid vague terms. Instead of "a picture of a server," describe the server and its context.
@@ -25,7 +25,7 @@ Avoid vague terms. Instead of "a picture of a server," describe the server and i
 -   **Compelling:** `A single, sleek, modern server rack with glowing blue LED lights, standing in a clean, dark, and futuristic data center.`
 
 ### Principle 2: Define the Style and Medium
-This is crucial for matching the tone of your article. Explicitly state the artistic style.
+This is crucial for matching the tone of the article. Explicitly state the artistic style.
 
 -   **Keywords:** `photorealistic`, `digital art`, `technical diagram`, `blueprint style`, `watercolor illustration`, `3D render`, `minimalist line art`, `abstract`, `conceptual art`.
 
@@ -39,7 +39,7 @@ Describe the environment and the mood. Lighting is one of the most powerful tool
 -   **Example:** `...on a desk illuminated by the soft morning light from a window.`
 
 ### Principle 4: Use Photography and Cinematography Terms
-Direct the "camera" to get the composition you want.
+Direct the "camera" to achieve the desired composition.
 
 -   **Keywords:** `wide-angle shot`, `close-up macro shot`, `from a low angle`, `top-down view`, `portrait`, `landscape`, `depth of field`, `motion blur`.
 
@@ -76,4 +76,4 @@ A detailed system architecture diagram for a URL shortening service similar to b
 A minimalist illustration showing a small sapling growing out of a discarded computer keyboard, symbolizing the growth of new ideas from old technology. Style: clean, simple color palette, symbolic.
 ```
 
-By combining these principles, you can move from simple pictures to compelling visual aids that elevate your articles.
+Combining these principles transforms simple pictures into compelling visual aids that elevate technical articles.

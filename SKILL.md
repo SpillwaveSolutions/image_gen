@@ -1,9 +1,25 @@
 ---
 name: image-gen
-description: Generate compelling cover images and in-article illustrations for technical articles using the imagen CLI tool. Use this skill when creating visual assets for blog posts, tutorials, or documentation. Handles both high-impact conceptual cover images and technical diagrams/illustrations for specific concepts. Includes prompt engineering best practices and SEO-friendly image integration.
+description: Generate compelling cover images and in-article illustrations for technical articles using the imagen CLI tool. Use when asked to "generate images", "create cover image", "make article illustrations", "create visual assets", or "add images to article". Handles both high-impact conceptual cover images and technical diagrams/illustrations for specific concepts. Includes prompt engineering best practices and SEO-friendly image integration.
 ---
 
 # Image Gen
+
+## Contents
+
+- [Overview](#overview)
+- [When to Use This Skill](#when-to-use-this-skill)
+- [Workflow](#workflow)
+  - [Step 1: Analyze Article Content](#step-1-analyze-article-content)
+  - [Step 2: Generate Cover Image](#step-2-generate-cover-image)
+  - [Step 3: Generate In-Article Images](#step-3-generate-in-article-images-1-3)
+  - [Step 4a: Integrate Images](#step-4a-integrate-images)
+  - [Step 4b: Write ALT Text](#step-4b-write-alt-text)
+  - [Step 5: Verify and Save](#step-5-verify-and-save)
+- [Command Reference](#command-reference)
+- [Prompt Engineering Best Practices](#prompt-engineering-best-practices)
+- [Common Patterns](#common-patterns)
+- [Resources](#resources)
 
 ## Overview
 
@@ -121,49 +137,44 @@ imagen generate "A flowchart-style diagram showing the Alembic migration workflo
 - Request "clear labels" or "connecting arrows" for clarity
 - Simpler is often better for technical diagrams
 
-### Step 4: Integrate Images with SEO-Friendly ALT Text
+### Step 4a: Integrate Images
 
-**CRITICAL**: Don't just generate images—integrate them into the article with descriptive ALT text for accessibility and SEO.
+**CRITICAL**: Integrate generated images into the article at strategic locations.
 
 **Integration Checklist**:
-1. ✅ Create `work/images/` directory if needed
-2. ✅ Generate all images (cover + in-article)
-3. ✅ Add cover image immediately after H1 title
-4. ✅ Add in-article images at strategic section breaks
-5. ✅ Write descriptive ALT text (50-125 characters) for each image
-6. ✅ Save updated article as new version (e.g., `v8_with_images.md`)
-
-**ALT Text Best Practices**:
-
-**Good ALT Text** (descriptive, specific):
-- ✅ "Architecture diagram showing Cloud Run connecting through VPC Connector to AlloyDB in private subnet"
-- ✅ "Comparison showing manual infrastructure with tangled wires versus automated infrastructure-as-code"
-- ✅ "Flowchart illustrating Alembic migration workflow from model changes to database update"
-
-**Bad ALT Text** (vague, non-descriptive):
-- ❌ "diagram" or "image"
-- ❌ "architecture" (too vague)
-- ❌ "image1.png" or "screenshot"
+1. Create `work/images/` directory if needed
+2. Verify all images generated successfully (cover + in-article)
+3. Add cover image immediately after H1 title
+4. Add in-article images at strategic section breaks
+5. Save updated article as new version (e.g., `v8_with_images.md`)
 
 **Markdown Integration Format**:
 
 ```markdown
 # Article Title
 
-![Conceptual cover image showing three glowing AI model pathways converging into Google Cloud platform](images/vertex_ai_cover.png)
+![Cover image description here](images/article_cover.png)
 
 ## Introduction
 
 Text introducing the problem...
 
-![Comparison diagram contrasting traditional manual infrastructure versus modern infrastructure-as-code approach](images/traditional_vs_iac.png)
-
-## Section 2: Architecture
-
-Text explaining architecture...
-
-![Technical diagram illustrating three-client pattern with color-coded SDK connections to Vertex AI](images/vertex_ai_three_patterns.png)
+![Diagram description here](images/article_diagram.png)
 ```
+
+### Step 4b: Write ALT Text
+
+Write descriptive ALT text (50-125 characters) for each image to ensure accessibility and SEO.
+
+**Good ALT Text** (descriptive, specific):
+- "Architecture diagram showing Cloud Run connecting through VPC Connector to AlloyDB in private subnet"
+- "Comparison showing manual infrastructure with tangled wires versus automated infrastructure-as-code"
+- "Flowchart illustrating Alembic migration workflow from model changes to database update"
+
+**Bad ALT Text** (vague, non-descriptive):
+- "diagram" or "image"
+- "architecture" (too vague)
+- "image1.png" or "screenshot"
 
 ### Step 5: Verify and Save
 
@@ -250,43 +261,3 @@ Complete guide to prompt engineering for the `imagen` CLI, including:
 
 Load this reference when crafting complex prompts or needing inspiration for visual concepts.
 
-## Example Workflow Execution
-
-**User Request**: "Generate images for my Vertex AI article in work/draft/vertex_ai_v7_polished.md"
-
-**Execution**:
-
-1. **Analyze**: Read article, identify 3 key concepts (three-client pattern, architecture, comparison)
-
-2. **Generate Cover**:
-   ```bash
-   imagen generate "A stunning digital art cover image showing three glowing pathways (green, blue, gold) converging into a central AI cloud platform representing Google Vertex AI. Dramatic cinematic lighting, futuristic tech aesthetic. Style: conceptual, 3D render, high-detail, professional." --output work/images/vertex_ai_cover.png
-   ```
-
-3. **Generate In-Article Images**:
-   ```bash
-   imagen generate "Technical diagram showing three color-coded client libraries (green: Google SDK, blue: Anthropic SDK, gold: OpenAI SDK) connecting to central Vertex AI platform. Clear labels and arrows. Style: blueprint, technical diagram, clean." --output work/images/vertex_ai_three_patterns.png
-
-   imagen generate "Side-by-side comparison: left shows traditional API integration with multiple adapters, right shows unified Vertex AI approach. Clean, minimalist. Style: minimalist illustration, professional." --output work/images/vertex_ai_comparison.png
-   ```
-
-4. **Integrate with ALT Text**:
-   ```markdown
-   # Mastering Google Vertex AI: Three Client Patterns
-
-   ![Conceptual image showing three glowing pathways converging into central AI cloud platform](images/vertex_ai_cover.png)
-
-   ## Introduction
-   ...
-
-   ![Technical diagram illustrating three client libraries with color-coded connections to Vertex AI](images/vertex_ai_three_patterns.png)
-
-   ## Traditional vs Unified Approach
-   ...
-
-   ![Comparison showing traditional multi-adapter API integration versus unified Vertex AI approach](images/vertex_ai_comparison.png)
-   ```
-
-5. **Save**: `work/draft/vertex_ai_v8_with_images.md`
-
-**Result**: Article enhanced with 1 cover + 2 in-article images, all with SEO-friendly ALT text.
