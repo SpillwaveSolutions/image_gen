@@ -1,7 +1,7 @@
 {
   "name": "image-gen",
-  "version": "2.0.0",
-  "description": "Cover images and in-article illustrations for Codex. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback.",
+  "version": "2.1.0",
+  "description": "Cover images and in-article illustrations for Codex. Imagen direct adapter and Grok or Codex engine hints.",
   "author": {
     "name": "Spillwave Solutions",
     "email": "rick@spillwave.com",
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "Image Gen",
     "shortDescription": "Cover and in-article images via imagen, grok, or Codex",
-    "longDescription": "Generate article cover images and technical illustrations. Installs the latest imagen CLI, pins Nano Banana 2 / Pro, and falls back to grok then Codex. Fail closed writes a prompt sidecar.",
+    "longDescription": "Generate article cover images and technical illustrations. Use Imagen or grok-img directly, or select the Codex agent host with an engine hint. Every engine must write the requested PNG or the run fails closed with a prompt sidecar.",
     "developerName": "Spillwave Solutions",
     "category": "Productivity",
     "capabilities": [

@@ -34,7 +34,7 @@ class GenerateTests(unittest.TestCase):
                 str(out),
             ]
             with patch.object(sys, "argv", argv), patch(
-                "generate.detect_backend", return_value=None
+                "generate.detect_backends", return_value=[]
             ):
                 code = generate.main()
             self.assertEqual(code, 2)
@@ -60,7 +60,7 @@ class GenerateTests(unittest.TestCase):
             ]
             backend = ResolvedBackend("imagen", "imagen-cli-vars", "/usr/bin/imagen")
             with patch.object(sys, "argv", argv), patch(
-                "generate.detect_backend", return_value=backend
+                "generate.detect_backends", return_value=[backend]
             ), patch("generate.imagen_supports_prompt_file", return_value=False), patch(
                 "generate.subprocess.run"
             ) as run:
@@ -68,6 +68,55 @@ class GenerateTests(unittest.TestCase):
             self.assertEqual(code, 0)
             run.assert_not_called()  # dry-run prints but does not execute
             self.assertTrue((Path(tmp) / "diagram_imagen.prompt.txt").exists())
+
+    def test_engine_hint_selects_grok_and_records_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "diagram.png"
+            argv = [
+                "generate.py",
+                "--prompt",
+                "technical diagram",
+                "--output",
+                str(out),
+                "--engine-hint",
+                "grok",
+                "--dry-run",
+            ]
+            backend = ResolvedBackend("grok-img", "grok-imagine", "/usr/bin/grok-img")
+            with patch.object(sys, "argv", argv), patch(
+                "generate.detect_backends", return_value=[backend]
+            ), patch("generate.subprocess.run") as run:
+                code = generate.main()
+            self.assertEqual(code, 0)
+            run.assert_not_called()
+            data = json.loads((Path(tmp) / "diagram.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["engine_hint"], "grok")
+            self.assertEqual(data["backend"], "grok-img")
+            prompt = (Path(tmp) / "diagram_imagen.prompt.txt").read_text(encoding="utf-8")
+            self.assertEqual(prompt, "technical diagram")
+
+    def test_grok_img_normalizes_generated_file_to_requested_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "diagram.png"
+            backend = ResolvedBackend("grok-img", "grok-imagine", "/usr/bin/grok-img")
+
+            def generate_file(cmd, check):
+                destination = Path(cmd[cmd.index("--output") + 1]) / "result.jpeg"
+                destination.write_bytes(b"generated-image")
+                return type("Result", (), {"returncode": 0})()
+
+            with patch("generate.subprocess.run", side_effect=generate_file):
+                code = generate.run_backend(
+                    backend,
+                    "technical diagram",
+                    Path(tmp) / "diagram_imagen.prompt.txt",
+                    out,
+                    "16:9",
+                    "grok-imagine-image",
+                    False,
+                )
+            self.assertEqual(code, 0)
+            self.assertEqual(out.read_bytes(), b"generated-image")
 
 
 if __name__ == "__main__":

@@ -17,16 +17,53 @@ Use this skill when the user wants a cover image, in-article illustration, or vi
 
 Do not use this skill to render Mermaid or PlantUML. Send those to `imagen-diagrams`.
 
-## Backend (auto)
+## Image-engine hint and backend (auto)
+
+Use `--engine-hint imagen`, `--engine-hint grok`, or `--engine-hint codex` when
+the caller has a preferred image engine. The hint selects that engine only. It
+does not pretend every installed command has a standalone image subcommand.
+
+- **Imagen:** calls the `imagen` CLI directly.
+- **Grok:** calls `grok-img`, the noninteractive xAI image CLI. The plugin
+  normalizes the generated image to the requested output path.
+- **Codex:** starts a Codex agent and asks it to use `image_gen` when that host
+  exposes the tool.
+
+Grok and Codex must write the requested PNG. A prose-only Codex result or a
+missing grok-img result fails closed and leaves the generated prompt sidecar for
+a manual retry. With no hint, `auto` tries each installed engine in order and
+falls through after a failed attempt, which lets an unauthenticated Imagen
+install reach another configured engine.
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double braces).
-2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
+2. Then `grok-img` CLI. Brace policy: `grok-imagine` (no rewrite).
 3. Else `codex` CLI. Brace policy: `grok-imagine` (no rewrite).
 4. Else fail closed. Write `<stem>_imagen.prompt.txt` and exit 2.
 
 Never invent a PNG. If no worker is installed, keep the prompt sidecar and tell the user to run `/image-gen-install`.
 
-## Install the imagen CLI
+## Install the Grok image CLI
+
+The `--engine-hint grok` adapter uses the noninteractive `grok-img` command,
+not Grok Build's interactive `/imagine` TUI. It needs Node.js 20.19 or newer
+and an xAI account with image-generation access.
+
+```bash
+npm install -g grok-image-cli
+grok-img --version
+grok-img auth login
+```
+
+Alternatively, configure the key noninteractively before running the skill:
+
+```bash
+export XAI_API_KEY="xai-..."
+```
+
+`grok-img` writes to a staging directory; `generate.py` selects its one result
+and copies it to the exact `--output` path.
+
+## Install the Imagen CLI
 
 Latest `gemini-imagen` (`imagen` on PATH) plus Nano Banana model pin:
 
@@ -77,6 +114,14 @@ python3 skills/image-gen/scripts/generate.py \
   --aspect 16:9 \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept] with color-coded arrows and clear labels. Style: blueprint, professional."
+
+# Ask grok-img to generate with the configured xAI account.
+python3 skills/image-gen/scripts/generate.py \
+  --kind article \
+  --engine-hint grok \
+  --aspect 16:9 \
+  --output work/images/article_workflow.png \
+  --prompt "A clean technical diagram showing [concept]."
 ```
 
 ### 4. Integrate + ALT text

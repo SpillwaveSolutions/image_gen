@@ -1,13 +1,13 @@
 {
   "name": "spillwave-image-gen",
   "description": "Optional native Grok marketplace metadata. Grok Build already loads Claude plugins with zero config.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "plugins": [
     {
       "name": "image-gen",
       "source": ".",
-      "description": "Cover images and in-article illustrations. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback. Claude-compatible.",
-      "version": "2.0.0",
+      "description": "Cover images and in-article illustrations. Imagen direct adapter and Grok or Codex engine hints. Claude-compatible.",
+      "version": "2.1.0",
       "compatibility": {
         "claude_plugin": true,
         "zero_config": true

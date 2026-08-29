@@ -6,19 +6,20 @@ from __future__ import annotations
 import re
 import shutil
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
-BackendName = Literal["imagen", "grok", "codex"]
+BackendName = Literal["imagen", "grok-img", "codex"]
 BracePolicy = Literal["imagen-cli-vars", "imagen-cli-scan", "grok-imagine"]
 
 POLICY_FOR: dict[str, BracePolicy] = {
     "imagen": "imagen-cli-vars",
     "imagen-scan": "imagen-cli-scan",
-    "grok": "grok-imagine",
+    "grok-img": "grok-imagine",
     "codex": "grok-imagine",
 }
 
-AUTO_ORDER: tuple[BackendName, ...] = ("imagen", "grok", "codex")
+AUTO_ORDER: tuple[BackendName, ...] = ("imagen", "grok-img", "codex")
 
 
 @dataclass
@@ -43,22 +44,40 @@ def escape_for_backend(text: str, policy: BracePolicy) -> str:
 
 
 def detect_backend(requested: str = "auto") -> ResolvedBackend | None:
+    """Resolve the first installed backend, retained for API compatibility."""
+    found = detect_backends(requested)
+    return found[0] if found else None
+
+
+def detect_backends(requested: str = "auto") -> list[ResolvedBackend]:
+    """Resolve all installed candidates in preference order.
+
+    Auto mode deliberately returns every usable command. A command existing on
+    PATH does not prove that it has credentials, so the renderer can fail over
+    when Imagen is installed but not configured.
+    """
     requested = (requested or "auto").strip().lower()
     if requested in ("imagen", "imagen-scan"):
         path = shutil.which("imagen")
         if not path:
-            return None
-        return ResolvedBackend("imagen", POLICY_FOR[requested], path)
-    if requested in ("grok", "codex"):
-        path = shutil.which(requested)
+            return []
+        return [ResolvedBackend("imagen", POLICY_FOR[requested], path)]
+    if requested in ("grok", "grok-img"):
+        path = shutil.which("grok-img")
         if not path:
-            return None
-        return ResolvedBackend(requested, POLICY_FOR[requested], path)  # type: ignore[arg-type]
+            return []
+        return [ResolvedBackend("grok-img", POLICY_FOR["grok-img"], path)]
+    if requested == "codex":
+        path = shutil.which("codex")
+        if not path:
+            return []
+        return [ResolvedBackend("codex", POLICY_FOR["codex"], path)]
+    resolved: list[ResolvedBackend] = []
     for name in AUTO_ORDER:
         path = shutil.which(name)
         if path:
-            return ResolvedBackend(name, POLICY_FOR[name], path)
-    return None
+            resolved.append(ResolvedBackend(name, POLICY_FOR[name], path))
+    return resolved
 
 
 def argv_for(
@@ -71,8 +90,9 @@ def argv_for(
     """Build the worker command. Prompt is always also on disk at prompt_file.
 
     imagen (gemini-imagen): positional/stdin prompt, -o, --aspect-ratio, -m
-    grok: grok imagine generate --prompt-file --aspect --output
-    codex: codex image generate --prompt-file --aspect --output
+    grok-img: direct xAI image CLI, generated separately via grok_img_argv.
+    codex: Codex agent running a prompt from stdin. It uses image_gen when
+    the host makes that tool available.
     """
     if backend.name == "imagen":
         cmd = [
@@ -88,31 +108,40 @@ def argv_for(
         if model:
             cmd.extend(["-m", model])
         return cmd
-    if backend.name == "grok":
-        cmd = [
-            backend.binary,
-            "imagine",
-            "generate",
-            "--prompt-file",
-            prompt_file,
-            "--aspect",
-            aspect,
-            "--output",
-            out_file,
-        ]
-        if model:
-            cmd.extend(["--model", model])
-        return cmd
+    cmd: list[str] = [
+        backend.binary,
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--add-dir",
+        str(Path(out_file).resolve().parent),
+        "-",
+    ]
+    if model:
+        cmd[2:2] = ["--model", model]
+    return cmd
+
+
+def grok_img_argv(
+    backend: ResolvedBackend,
+    prompt: str,
+    output_dir: str,
+    aspect: str,
+    model: str | None = None,
+) -> list[str]:
+    """Build the documented grok-img invocation for a single new image."""
+    if backend.name != "grok-img":
+        raise ValueError("grok_img_argv requires a grok-img backend")
     cmd = [
         backend.binary,
-        "image",
         "generate",
-        "--prompt-file",
-        prompt_file,
-        "--aspect",
+        prompt,
+        "--aspect-ratio",
         aspect,
+        "--count",
+        "1",
         "--output",
-        out_file,
+        output_dir,
     ]
     if model:
         cmd.extend(["--model", model])
