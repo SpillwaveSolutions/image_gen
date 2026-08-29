@@ -42,7 +42,28 @@ install reach another configured engine.
 
 Never invent a PNG. If no worker is installed, keep the prompt sidecar and tell the user to run `/image-gen-install`.
 
-## Install the imagen CLI
+## Install the Grok image CLI
+
+The `--engine-hint grok` adapter uses the noninteractive `grok-img` command,
+not Grok Build's interactive `/imagine` TUI. It needs Node.js 20.19 or newer
+and an xAI account with image-generation access.
+
+```bash
+npm install -g grok-image-cli
+grok-img --version
+grok-img auth login
+```
+
+Alternatively, configure the key noninteractively before running the skill:
+
+```bash
+export XAI_API_KEY="xai-..."
+```
+
+`grok-img` writes to a staging directory; `generate.py` selects its one result
+and copies it to the exact `--output` path.
+
+## Install the Imagen CLI
 
 Latest `gemini-imagen` (`imagen` on PATH) plus Nano Banana model pin:
 
