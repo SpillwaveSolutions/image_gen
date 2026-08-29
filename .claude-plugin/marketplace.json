@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "spillwave-image-gen",
+  "owner": {
+    "name": "Spillwave Solutions",
+    "email": "rick@spillwave.com",
+    "url": "https://github.com/RichardHightower"
+  },
+  "metadata": {
+    "description": "Article cover and in-article image generation plugin."
+  },
+  "plugins": [
+    {
+      "name": "image-gen",
+      "source": "./",
+      "description": "Cover images and in-article illustrations. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback.",
+      "version": "2.0.0",
+      "author": {
+        "name": "Spillwave Solutions"
+      },
+      "homepage": "https://github.com/SpillwaveSolutions/image_gen",
+      "keywords": [
+        "image-generation",
+        "imagen",
+        "nano-banana",
+        "article",
+        "cover-image"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# WikiTicket SDD settings. Policy lives in AGENTS.md / CLAUDE.md.
+version: 1
+
+project:
+  key: IMGEN
+  name: "Image Gen"
+
+ticketing:
+  system: github
+  project: SpillwaveSolutions/image_gen
+
+wiki:
+  system: github-wiki
+  root_url: https://github.com/SpillwaveSolutions/image_gen/wiki
+
+paths:
+  plans: docs/plans
+  status: docs/status
+  roadmap: docs/roadmap.md
+
+status:
+  default_kind: daily
+  week_starts: monday
+  publish: true
+
+sync:
+  active_window_days: 14
+  conflict_policy: report
+  push_on_capture: true
+
+features:
+  auto_merge_on_green: true
+
+classifier:
+  enabled: false
+  min_confidence: 0.7
+  debounce: stop
+
+installed: 0.24.4

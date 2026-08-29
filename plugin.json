@@ -1,0 +1,40 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "image-gen",
+  "version": "2.0.0",
+  "description": "Generate cover images and in-article illustrations. Installs the latest imagen CLI, pins Nano Banana 2 / Pro, and falls back to grok then codex.",
+  "author": {
+    "name": "Spillwave Solutions",
+    "email": "rick@spillwave.com",
+    "url": "https://spillwave.com"
+  },
+  "homepage": "https://github.com/SpillwaveSolutions/image_gen",
+  "repository": "https://github.com/SpillwaveSolutions/image_gen",
+  "license": "MIT",
+  "keywords": [
+    "image-generation",
+    "imagen",
+    "nano-banana",
+    "gemini",
+    "article",
+    "cover-image",
+    "claude-code",
+    "codex",
+    "grok-build",
+    "cursor",
+    "agent-plugins",
+    "worklog",
+    "wiki-ticket-sdd"
+  ],
+  "extensions": {
+    "com.anthropic.claude-code": {
+      "pluginManifest": ".claude-plugin/plugin.json"
+    },
+    "com.openai.codex": {
+      "pluginManifest": ".codex-plugin/plugin.json"
+    },
+    "ai.xai.grok-build": {
+      "pluginManifest": ".grok-plugin/plugin.json"
+    }
+  }
+}
