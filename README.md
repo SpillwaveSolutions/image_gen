@@ -13,7 +13,24 @@ Hosts: **Claude Code**, **Codex**, **Grok Build**, **Cursor**, **SKILZ / Agent P
 
 Not the diagram renderer. Mermaid and PlantUML go to [`imagen-diagrams`](https://github.com/SpillwaveSolutions/imagen-diagrams).
 
-## Backend (auto)
+## Image-engine hint and backend (auto)
+
+To direct a generation through a specific host, pass one of:
+
+```bash
+--engine-hint imagen
+--engine-hint grok
+--engine-hint codex
+```
+
+`imagen` is a direct CLI adapter. `grok` and `codex` are agent adapters: the
+plugin sends the art brief to the host and requires it to save a PNG to the
+requested output path. If the host returns prose without a file, the command
+fails closed and retains the prompt sidecar. With no hint, auto mode tries the
+available engines in order and continues after an authentication or runtime
+failure.
+
+## Backend order (auto)
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double `{` `}`).
 2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).

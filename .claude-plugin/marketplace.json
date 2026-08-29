@@ -13,8 +13,8 @@
     {
       "name": "image-gen",
       "source": "./",
-      "description": "Cover images and in-article illustrations. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback.",
-      "version": "2.0.0",
+      "description": "Cover images and in-article illustrations. Imagen direct adapter and Grok or Codex engine hints.",
+      "version": "2.1.0",
       "author": {
         "name": "Spillwave Solutions"
       },

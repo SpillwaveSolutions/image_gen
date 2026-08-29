@@ -6,7 +6,13 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "skills/image-gen/scripts"))
 
-from backends import argv_for, detect_backend, imagen_fallback_argv  # noqa: E402
+from backends import (  # noqa: E402
+    ResolvedBackend,
+    argv_for,
+    detect_backend,
+    detect_backends,
+    imagen_fallback_argv,
+)
 
 
 class DetectTests(unittest.TestCase):
@@ -41,6 +47,14 @@ class DetectTests(unittest.TestCase):
     def test_none_when_missing(self):
         with patch("backends.shutil.which", return_value=None):
             self.assertIsNone(detect_backend("auto"))
+
+    def test_auto_returns_all_candidates_for_runtime_failover(self):
+        def which(name):
+            return {"imagen": "/usr/bin/imagen", "grok": "/usr/bin/grok"}.get(name)
+
+        with patch("backends.shutil.which", side_effect=which):
+            resolved = detect_backends("auto")
+        self.assertEqual([item.name for item in resolved], ["imagen", "grok"])
 
     def test_imagen_argv_uses_prompt_file_and_model(self):
         def which(name):
@@ -89,16 +103,20 @@ class DetectTests(unittest.TestCase):
             cmd,
             [
                 "/usr/bin/grok",
-                "imagine",
-                "generate",
+                "--cwd",
+                str(Path("out.png").resolve().parent),
                 "--prompt-file",
                 "p.txt",
-                "--aspect",
-                "16:9",
-                "--output",
-                "out.png",
+                "--permission-mode",
+                "auto",
             ],
         )
+
+    def test_codex_argv_runs_an_agent_not_a_missing_image_subcommand(self):
+        backend = ResolvedBackend("codex", "grok-imagine", "/usr/bin/codex")
+        cmd = argv_for(backend, "p.txt", "out.png", "16:9")
+        self.assertEqual(cmd[0:4], ["/usr/bin/codex", "exec", "--skip-git-repo-check", "--ephemeral"])
+        self.assertIn("-", cmd)
 
 
 if __name__ == "__main__":

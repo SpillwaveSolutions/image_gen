@@ -34,7 +34,7 @@ class GenerateTests(unittest.TestCase):
                 str(out),
             ]
             with patch.object(sys, "argv", argv), patch(
-                "generate.detect_backend", return_value=None
+                "generate.detect_backends", return_value=[]
             ):
                 code = generate.main()
             self.assertEqual(code, 2)
@@ -60,7 +60,7 @@ class GenerateTests(unittest.TestCase):
             ]
             backend = ResolvedBackend("imagen", "imagen-cli-vars", "/usr/bin/imagen")
             with patch.object(sys, "argv", argv), patch(
-                "generate.detect_backend", return_value=backend
+                "generate.detect_backends", return_value=[backend]
             ), patch("generate.imagen_supports_prompt_file", return_value=False), patch(
                 "generate.subprocess.run"
             ) as run:
@@ -68,6 +68,32 @@ class GenerateTests(unittest.TestCase):
             self.assertEqual(code, 0)
             run.assert_not_called()  # dry-run prints but does not execute
             self.assertTrue((Path(tmp) / "diagram_imagen.prompt.txt").exists())
+
+    def test_engine_hint_selects_grok_and_records_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "diagram.png"
+            argv = [
+                "generate.py",
+                "--prompt",
+                "technical diagram",
+                "--output",
+                str(out),
+                "--engine-hint",
+                "grok",
+                "--dry-run",
+            ]
+            backend = ResolvedBackend("grok", "grok-imagine", "/usr/bin/grok")
+            with patch.object(sys, "argv", argv), patch(
+                "generate.detect_backends", return_value=[backend]
+            ), patch("generate.subprocess.run") as run:
+                code = generate.main()
+            self.assertEqual(code, 0)
+            run.assert_not_called()
+            data = json.loads((Path(tmp) / "diagram.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["engine_hint"], "grok")
+            self.assertEqual(data["backend"], "grok")
+            prompt = (Path(tmp) / "diagram_imagen.prompt.txt").read_text(encoding="utf-8")
+            self.assertIn("Save the PNG exactly at", prompt)
 
 
 if __name__ == "__main__":

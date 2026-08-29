@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0
+
+- Add `--engine-hint imagen|grok|codex`.
+- Run Grok Build and Codex as agents that use their native image tools, then
+  verify they wrote the requested PNG.
+- Auto mode now falls through when an installed engine fails at runtime, such
+  as an unconfigured Imagen CLI.
+
 ## 2.0.0
 
 - Ship as a Claude Code, Codex, Grok Build, Cursor, and Agent Plugins v1 plugin.

@@ -2,7 +2,7 @@
 name: image-gen
 description: >
   Generate cover images and in-article illustrations for technical articles.
-  Auto image backend: imagen CLI (Nano Banana 2 / Pro), else grok, else codex.
+  Auto image backend: Imagen CLI (Nano Banana 2 / Pro), Grok agent, then Codex agent.
   Triggers: generate images, cover image, article illustrations, visual assets,
   imagen, nano banana, grok imagine.
 ---
@@ -17,7 +17,21 @@ Use this skill when the user wants a cover image, in-article illustration, or vi
 
 Do not use this skill to render Mermaid or PlantUML. Send those to `imagen-diagrams`.
 
-## Backend (auto)
+## Image-engine hint and backend (auto)
+
+Use `--engine-hint imagen`, `--engine-hint grok`, or `--engine-hint codex`
+when a caller has a preferred image engine. The hint chooses a real execution
+path, not a guessed subcommand.
+
+- **Imagen** calls the `imagen` CLI directly.
+- **Grok** starts a Grok Build agent and asks its native image tool to save the
+  requested PNG.
+- **Codex** starts a Codex agent and asks `image_gen` to save the requested PNG.
+
+Grok and Codex must actually create the file. A prose-only response fails
+closed, leaves the prompt sidecar, and records the failed attempt. With no
+hint, auto tries every installed engine in this order and continues after a
+runtime or authentication failure.
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double braces).
 2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
@@ -77,6 +91,14 @@ python3 skills/image-gen/scripts/generate.py \
   --aspect 16:9 \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept] with color-coded arrows and clear labels. Style: blueprint, professional."
+
+# Prefer the Codex host's native image generation.
+python3 skills/image-gen/scripts/generate.py \
+  --kind article \
+  --engine-hint codex \
+  --aspect 16:9 \
+  --output work/images/article_workflow.png \
+  --prompt "A clean technical diagram showing [concept]."
 ```
 
 ### 4. Integrate + ALT text
@@ -89,7 +111,8 @@ Cover immediately after H1. In-article images at section breaks. ALT text 50–1
 
 ### 5. Verify
 
-PNG exists. Sidecar `*.json` records backend, policy, model. Prompt sidecar kept next to the PNG.
+PNG exists. Sidecar `*.json` records engine hint, backend, policy, model, and
+every attempted engine. Prompt sidecar is kept next to the PNG.
 
 ## Scripts
 
@@ -116,6 +139,6 @@ Nano Banana Pro renders in-image text more reliably than Flash. Ask for "clear l
 
 - `<stem>.png` (or the `--output` path)
 - `<stem>_imagen.prompt.txt` (always)
-- `<stem>.json` sidecar (backend, policy, model)
+- `<stem>.json` sidecar (engine hint, backend, policy, model, attempts)
 
 If the worker is missing, only the prompt sidecar is written and the process exits 2.

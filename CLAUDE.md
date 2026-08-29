@@ -17,9 +17,13 @@ python3 -m unittest discover -s tests -v
 ## Backend auto
 
 1. `imagen` on PATH. Policy `imagen-cli-vars`.
-2. Else `grok`. Policy `grok-imagine`.
-3. Else `codex`. Policy `grok-imagine`.
+2. Then Grok Build agent. Policy `grok-imagine`.
+3. Then Codex agent. Policy `grok-imagine`.
 4. Else write `<stem>_imagen.prompt.txt` and exit 2.
+
+Use `--engine-hint imagen|grok|codex` to select a runner. Grok and Codex are
+agent-host adapters, not imaginary `image generate` subcommands. Both must
+write the requested PNG for a run to pass.
 
 ## Models
 

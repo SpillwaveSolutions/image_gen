@@ -17,7 +17,22 @@ Use this skill when the user wants a cover image, in-article illustration, or vi
 
 Do not use this skill to render Mermaid or PlantUML. Send those to `imagen-diagrams`.
 
-## Backend (auto)
+## Image-engine hint and backend (auto)
+
+Use `--engine-hint imagen`, `--engine-hint grok`, or `--engine-hint codex` when
+the caller has a preferred image engine. The hint selects that engine only. It
+does not pretend every installed command has a standalone image subcommand.
+
+- **Imagen:** calls the `imagen` CLI directly.
+- **Grok:** starts a Grok Build agent and asks it to use its native image tool.
+- **Codex:** starts a Codex agent and asks it to use `image_gen` when that host
+  exposes the tool.
+
+Grok and Codex must write the requested PNG. A prose-only result fails closed
+and leaves the generated prompt sidecar for a manual retry. With no hint,
+`auto` tries each installed engine in order and falls through after a failed
+attempt, which lets an unauthenticated Imagen install reach another configured
+engine.
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double braces).
 2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
@@ -77,6 +92,14 @@ python3 skills/image-gen/scripts/generate.py \
   --aspect 16:9 \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept] with color-coded arrows and clear labels. Style: blueprint, professional."
+
+# Ask a Grok Build host to generate through its native image tool.
+python3 skills/image-gen/scripts/generate.py \
+  --kind article \
+  --engine-hint grok \
+  --aspect 16:9 \
+  --output work/images/article_workflow.png \
+  --prompt "A clean technical diagram showing [concept]."
 ```
 
 ### 4. Integrate + ALT text
