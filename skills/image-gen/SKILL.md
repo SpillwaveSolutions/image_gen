@@ -24,18 +24,19 @@ the caller has a preferred image engine. The hint selects that engine only. It
 does not pretend every installed command has a standalone image subcommand.
 
 - **Imagen:** calls the `imagen` CLI directly.
-- **Grok:** starts a Grok Build agent and asks it to use its native image tool.
+- **Grok:** calls `grok-img`, the noninteractive xAI image CLI. The plugin
+  normalizes the generated image to the requested output path.
 - **Codex:** starts a Codex agent and asks it to use `image_gen` when that host
   exposes the tool.
 
-Grok and Codex must write the requested PNG. A prose-only result fails closed
-and leaves the generated prompt sidecar for a manual retry. With no hint,
-`auto` tries each installed engine in order and falls through after a failed
-attempt, which lets an unauthenticated Imagen install reach another configured
-engine.
+Grok and Codex must write the requested PNG. A prose-only Codex result or a
+missing grok-img result fails closed and leaves the generated prompt sidecar for
+a manual retry. With no hint, `auto` tries each installed engine in order and
+falls through after a failed attempt, which lets an unauthenticated Imagen
+install reach another configured engine.
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double braces).
-2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
+2. Then `grok-img` CLI. Brace policy: `grok-imagine` (no rewrite).
 3. Else `codex` CLI. Brace policy: `grok-imagine` (no rewrite).
 4. Else fail closed. Write `<stem>_imagen.prompt.txt` and exit 2.
 
@@ -93,7 +94,7 @@ python3 skills/image-gen/scripts/generate.py \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept] with color-coded arrows and clear labels. Style: blueprint, professional."
 
-# Ask a Grok Build host to generate through its native image tool.
+# Ask grok-img to generate with the configured xAI account.
 python3 skills/image-gen/scripts/generate.py \
   --kind article \
   --engine-hint grok \

@@ -3,7 +3,7 @@
 
 Backend order (auto):
 1. imagen on PATH. Policy imagen-cli-vars.
-2. Else grok on PATH. Policy grok-imagine.
+2. Then grok-img on PATH. Policy grok-imagine.
 3. Else codex on PATH. Policy grok-imagine.
 4. Else fail closed. Write <stem>_imagen.prompt.txt and exit 2.
 """
@@ -12,19 +12,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from backends import (
     argv_for,
     detect_backends,
     escape_for_backend,
+    grok_img_argv,
     imagen_fallback_argv,
 )
 from models import DEFAULT_MODEL_ID, resolve_model
 
 SCRIPTS = Path(__file__).resolve().parent
+GROK_IMG_DEFAULT_MODEL = "grok-imagine-image"
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 
 
 def prompt_path_for(output: Path) -> Path:
@@ -63,6 +68,29 @@ def run_backend(
     model: str | None,
     dry_run: bool,
 ) -> int:
+    if resolved.name == "grok-img":
+        stage = Path(tempfile.mkdtemp(prefix=f".{out.stem}.grok-img-", dir=out.parent))
+        try:
+            cmd = grok_img_argv(resolved, prompt, str(stage), aspect, model=model)
+            print(" ".join(_redact_prompt(cmd)))
+            if dry_run:
+                return 0
+            proc = subprocess.run(cmd, check=False)
+            if proc.returncode != 0:
+                return proc.returncode
+            generated = sorted(
+                (path for path in stage.rglob("*") if path.suffix.lower() in IMAGE_EXTENSIONS),
+                key=lambda path: path.stat().st_mtime,
+                reverse=True,
+            )
+            if not generated:
+                print("grok-img exited without writing an image.", file=sys.stderr)
+                return 4
+            shutil.copy2(generated[0], out)
+            return 0
+        finally:
+            shutil.rmtree(stage, ignore_errors=True)
+
     if resolved.name == "imagen" and not imagen_supports_prompt_file(resolved.binary):
         cmd = imagen_fallback_argv(
             resolved, prompt, str(out), aspect, model=model
@@ -75,7 +103,7 @@ def run_backend(
     if dry_run:
         return 0
     try:
-        agent_host = resolved.name in {"grok", "codex"}
+        agent_host = resolved.name == "codex"
         proc = subprocess.run(
             cmd,
             check=False,
@@ -92,7 +120,7 @@ def run_backend(
             if diagnostics:
                 print(diagnostics[-2000:], file=sys.stderr)
         return proc.returncode
-    if resolved.name in {"grok", "codex"} and not out.exists():
+    if resolved.name == "codex" and not out.exists():
         print(
             f"{resolved.name} exited without writing {out}. "
             "Prompt kept for manual retry.",
@@ -178,7 +206,7 @@ def main() -> int:
         )
         sidecar.write_text(json.dumps(sidecar_data, indent=2) + "\n", encoding="utf-8")
         print(
-            "No image backend on PATH (imagen, grok, or codex). "
+            "No image backend on PATH (imagen, grok-img, or codex). "
             f"Wrote prompt to {prompt_file}.",
             file=sys.stderr,
         )
@@ -189,7 +217,7 @@ def main() -> int:
         policy = resolved.policy
         worker_prompt = (
             prompt
-            if resolved.name == "imagen"
+            if resolved.name != "codex"
             else agent_prompt(resolved.name, prompt, out, args.aspect)
         )
         escaped = escape_for_backend(worker_prompt, policy)
@@ -201,6 +229,8 @@ def main() -> int:
         )
         if resolved.name == "imagen" and not model:
             model = DEFAULT_MODEL_ID
+        if resolved.name == "grok-img" and not model:
+            model = GROK_IMG_DEFAULT_MODEL
         code = run_backend(
             resolved,
             escaped,

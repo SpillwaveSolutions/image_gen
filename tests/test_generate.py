@@ -82,7 +82,7 @@ class GenerateTests(unittest.TestCase):
                 "grok",
                 "--dry-run",
             ]
-            backend = ResolvedBackend("grok", "grok-imagine", "/usr/bin/grok")
+            backend = ResolvedBackend("grok-img", "grok-imagine", "/usr/bin/grok-img")
             with patch.object(sys, "argv", argv), patch(
                 "generate.detect_backends", return_value=[backend]
             ), patch("generate.subprocess.run") as run:
@@ -91,9 +91,32 @@ class GenerateTests(unittest.TestCase):
             run.assert_not_called()
             data = json.loads((Path(tmp) / "diagram.json").read_text(encoding="utf-8"))
             self.assertEqual(data["engine_hint"], "grok")
-            self.assertEqual(data["backend"], "grok")
+            self.assertEqual(data["backend"], "grok-img")
             prompt = (Path(tmp) / "diagram_imagen.prompt.txt").read_text(encoding="utf-8")
-            self.assertIn("Save the PNG exactly at", prompt)
+            self.assertEqual(prompt, "technical diagram")
+
+    def test_grok_img_normalizes_generated_file_to_requested_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "diagram.png"
+            backend = ResolvedBackend("grok-img", "grok-imagine", "/usr/bin/grok-img")
+
+            def generate_file(cmd, check):
+                destination = Path(cmd[cmd.index("--output") + 1]) / "result.jpeg"
+                destination.write_bytes(b"generated-image")
+                return type("Result", (), {"returncode": 0})()
+
+            with patch("generate.subprocess.run", side_effect=generate_file):
+                code = generate.run_backend(
+                    backend,
+                    "technical diagram",
+                    Path(tmp) / "diagram_imagen.prompt.txt",
+                    out,
+                    "16:9",
+                    "grok-imagine-image",
+                    False,
+                )
+            self.assertEqual(code, 0)
+            self.assertEqual(out.read_bytes(), b"generated-image")
 
 
 if __name__ == "__main__":

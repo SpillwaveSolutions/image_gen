@@ -11,6 +11,7 @@ from backends import (  # noqa: E402
     argv_for,
     detect_backend,
     detect_backends,
+    grok_img_argv,
     imagen_fallback_argv,
 )
 
@@ -28,11 +29,11 @@ class DetectTests(unittest.TestCase):
 
     def test_auto_falls_to_grok(self):
         def which(name):
-            return {"grok": "/usr/bin/grok", "codex": "/usr/bin/codex"}.get(name)
+            return {"grok-img": "/usr/bin/grok-img", "codex": "/usr/bin/codex"}.get(name)
 
         with patch("backends.shutil.which", side_effect=which):
             resolved = detect_backend("auto")
-        self.assertEqual(resolved.name, "grok")
+        self.assertEqual(resolved.name, "grok-img")
         self.assertEqual(resolved.policy, "grok-imagine")
 
     def test_auto_falls_to_codex(self):
@@ -50,11 +51,11 @@ class DetectTests(unittest.TestCase):
 
     def test_auto_returns_all_candidates_for_runtime_failover(self):
         def which(name):
-            return {"imagen": "/usr/bin/imagen", "grok": "/usr/bin/grok"}.get(name)
+            return {"imagen": "/usr/bin/imagen", "grok-img": "/usr/bin/grok-img"}.get(name)
 
         with patch("backends.shutil.which", side_effect=which):
             resolved = detect_backends("auto")
-        self.assertEqual([item.name for item in resolved], ["imagen", "grok"])
+        self.assertEqual([item.name for item in resolved], ["imagen", "grok-img"])
 
     def test_imagen_argv_uses_prompt_file_and_model(self):
         def which(name):
@@ -92,23 +93,25 @@ class DetectTests(unittest.TestCase):
             ],
         )
 
-    def test_grok_argv(self):
+    def test_grok_img_argv(self):
         def which(name):
-            return "/usr/bin/grok" if name == "grok" else None
+            return "/usr/bin/grok-img" if name == "grok-img" else None
 
         with patch("backends.shutil.which", side_effect=which):
             resolved = detect_backend("grok")
-        cmd = argv_for(resolved, "p.txt", "out.png", "16:9")
+        cmd = grok_img_argv(resolved, "a diagram", "out-dir", "16:9")
         self.assertEqual(
             cmd,
             [
-                "/usr/bin/grok",
-                "--cwd",
-                str(Path("out.png").resolve().parent),
-                "--prompt-file",
-                "p.txt",
-                "--permission-mode",
-                "auto",
+                "/usr/bin/grok-img",
+                "generate",
+                "a diagram",
+                "--aspect-ratio",
+                "16:9",
+                "--count",
+                "1",
+                "--output",
+                "out-dir",
             ],
         )
 

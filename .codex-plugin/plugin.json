@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "Image Gen",
     "shortDescription": "Cover and in-article images via imagen, grok, or Codex",
-    "longDescription": "Generate article cover images and technical illustrations. Use Imagen directly or select Grok and Codex agent hosts with an engine hint. Every host must write the requested PNG or the run fails closed with a prompt sidecar.",
+    "longDescription": "Generate article cover images and technical illustrations. Use Imagen or grok-img directly, or select the Codex agent host with an engine hint. Every engine must write the requested PNG or the run fails closed with a prompt sidecar.",
     "developerName": "Spillwave Solutions",
     "category": "Productivity",
     "capabilities": [

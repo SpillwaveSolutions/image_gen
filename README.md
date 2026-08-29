@@ -23,17 +23,26 @@ To direct a generation through a specific host, pass one of:
 --engine-hint codex
 ```
 
-`imagen` is a direct CLI adapter. `grok` and `codex` are agent adapters: the
-plugin sends the art brief to the host and requires it to save a PNG to the
-requested output path. If the host returns prose without a file, the command
-fails closed and retains the prompt sidecar. With no hint, auto mode tries the
-available engines in order and continues after an authentication or runtime
-failure.
+`imagen` and `grok-img` are direct CLI adapters. `codex` is an agent adapter:
+the plugin asks Codex to save a PNG to the requested output path. `grok-img`
+renders into an isolated staging directory and the plugin normalizes its image
+to the requested path. A missing result fails closed and retains the prompt
+sidecar. With no hint, auto mode tries the available engines in order and
+continues after an authentication or runtime failure.
+
+The official interactive Grok Build TUI supports `/imagine <prompt>`, but it
+saves a session image rather than accepting a requested output path. Use
+`grok-img` for the scriptable adapter:
+
+```bash
+npm install -g grok-image-cli
+grok-img auth login
+```
 
 ## Backend order (auto)
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double `{` `}`).
-2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
+2. Then `grok-img` CLI. Brace policy: `grok-imagine` (no rewrite).
 3. Else `codex` CLI. Brace policy: `grok-imagine` (no rewrite).
 4. Else fail closed. Writes `<stem>_imagen.prompt.txt` and exits 2.
 

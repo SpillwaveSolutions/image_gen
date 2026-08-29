@@ -2,7 +2,7 @@
 name: image-gen
 description: >
   Generate cover images and in-article illustrations for technical articles.
-  Auto image backend: Imagen CLI (Nano Banana 2 / Pro), Grok agent, then Codex agent.
+  Auto image backend: Imagen CLI (Nano Banana 2 / Pro), grok-img, then Codex agent.
   Triggers: generate images, cover image, article illustrations, visual assets,
   imagen, nano banana, grok imagine.
 ---
@@ -24,17 +24,17 @@ when a caller has a preferred image engine. The hint chooses a real execution
 path, not a guessed subcommand.
 
 - **Imagen** calls the `imagen` CLI directly.
-- **Grok** starts a Grok Build agent and asks its native image tool to save the
-  requested PNG.
+- **Grok** calls `grok-img`, the noninteractive xAI image CLI, then normalizes
+  its generated file to the requested output path.
 - **Codex** starts a Codex agent and asks `image_gen` to save the requested PNG.
 
-Grok and Codex must actually create the file. A prose-only response fails
-closed, leaves the prompt sidecar, and records the failed attempt. With no
-hint, auto tries every installed engine in this order and continues after a
-runtime or authentication failure.
+Grok and Codex must actually create the file. A prose-only Codex response or a
+missing grok-img result fails closed, leaves the prompt sidecar, and records the
+failed attempt. With no hint, auto tries every installed engine in this order
+and continues after a runtime or authentication failure.
 
 1. `imagen` CLI if on PATH. Brace policy: `imagen-cli-vars` (double braces).
-2. Else `grok` CLI. Brace policy: `grok-imagine` (no rewrite).
+2. Then `grok-img` CLI. Brace policy: `grok-imagine` (no rewrite).
 3. Else `codex` CLI. Brace policy: `grok-imagine` (no rewrite).
 4. Else fail closed. Write `<stem>_imagen.prompt.txt` and exit 2.
 
@@ -92,10 +92,11 @@ python3 skills/image-gen/scripts/generate.py \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept] with color-coded arrows and clear labels. Style: blueprint, professional."
 
-# Prefer the Codex host's native image generation.
+# Prefer the noninteractive grok-img CLI. Configure XAI_API_KEY or run
+# `grok-img auth login` first.
 python3 skills/image-gen/scripts/generate.py \
   --kind article \
-  --engine-hint codex \
+  --engine-hint grok \
   --aspect 16:9 \
   --output work/images/article_workflow.png \
   --prompt "A clean technical diagram showing [concept]."

@@ -3,8 +3,10 @@
 ## 2.1.0
 
 - Add `--engine-hint imagen|grok|codex`.
-- Run Grok Build and Codex as agents that use their native image tools, then
-  verify they wrote the requested PNG.
+- Map the Grok hint to grok-img, use an isolated output directory, and
+  normalize its generated image to the requested PNG path.
+- Run Codex as an agent that uses its native image tool, then verify it wrote
+  the requested PNG.
 - Auto mode now falls through when an installed engine fails at runtime, such
   as an unconfigured Imagen CLI.
 
