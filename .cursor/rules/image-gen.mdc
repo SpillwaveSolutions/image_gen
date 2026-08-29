@@ -1,0 +1,9 @@
+---
+description: Use image-gen for article covers and illustrations. Auto backend imagen, then grok, then codex.
+globs:
+  - "work/images/**"
+  - "**/*cover*.png"
+alwaysApply: false
+---
+
+When generating article images, use the image-gen skill. Run `skills/image-gen/scripts/generate.py`. Do not invent PNGs. If no backend is on PATH, keep `<stem>_imagen.prompt.txt` and stop.

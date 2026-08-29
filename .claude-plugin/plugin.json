@@ -1,0 +1,27 @@
+{
+  "name": "image-gen",
+  "displayName": "Image Gen",
+  "version": "2.0.0",
+  "description": "Cover images and in-article illustrations. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback.",
+  "author": {
+    "name": "Spillwave Solutions",
+    "email": "rick@spillwave.com",
+    "url": "https://spillwave.com"
+  },
+  "homepage": "https://github.com/SpillwaveSolutions/image_gen",
+  "repository": "https://github.com/SpillwaveSolutions/image_gen",
+  "license": "MIT",
+  "keywords": [
+    "image-generation",
+    "imagen",
+    "nano-banana",
+    "article",
+    "cover-image",
+    "claude-code",
+    "worklog",
+    "wiki-ticket-sdd"
+  ],
+  "defaultEnabled": true,
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "image-gen",
+  "version": "2.0.0",
+  "description": "Cover images and in-article illustrations for Codex. Latest imagen CLI, Nano Banana 2 / Pro, grok/codex fallback.",
+  "author": {
+    "name": "Spillwave Solutions",
+    "email": "rick@spillwave.com",
+    "url": "https://spillwave.com"
+  },
+  "homepage": "https://github.com/SpillwaveSolutions/image_gen",
+  "repository": "https://github.com/SpillwaveSolutions/image_gen",
+  "license": "MIT",
+  "keywords": [
+    "image-generation",
+    "imagen",
+    "nano-banana",
+    "article",
+    "codex",
+    "agent-skills",
+    "worklog",
+    "wiki-ticket-sdd"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Image Gen",
+    "shortDescription": "Cover and in-article images via imagen, grok, or Codex",
+    "longDescription": "Generate article cover images and technical illustrations. Installs the latest imagen CLI, pins Nano Banana 2 / Pro, and falls back to grok then Codex. Fail closed writes a prompt sidecar.",
+    "developerName": "Spillwave Solutions",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/SpillwaveSolutions/image_gen",
+    "defaultPrompt": [
+      "Generate a cover image for this article.",
+      "Create in-article illustrations for the key concepts.",
+      "Install the latest imagen CLI and pin Nano Banana 2."
+    ],
+    "brandColor": "#4285F4"
+  }
+}
