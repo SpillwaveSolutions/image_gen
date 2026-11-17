@@ -113,6 +113,10 @@ def argv_for(
         "exec",
         "--skip-git-repo-check",
         "--ephemeral",
+        # exec defaults to a read-only sandbox: codex draws the image but cannot
+        # save it to the output path, and generate.py reports "wrote nothing".
+        "-s",
+        "workspace-write",
         "--add-dir",
         str(Path(out_file).resolve().parent),
         "-",
