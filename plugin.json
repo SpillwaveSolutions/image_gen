@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "image-gen",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Generate cover images and in-article illustrations. Imagen direct adapter plus explicit Grok and Codex agent-engine hints with verified PNG output.",
   "author": {
     "name": "Spillwave Solutions",

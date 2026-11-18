@@ -1,6 +1,6 @@
 {
   "name": "image-gen",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Cover images and in-article illustrations. Imagen direct adapter and Grok or Codex engine hints.",
   "author": {
     "name": "Spillwave Solutions",

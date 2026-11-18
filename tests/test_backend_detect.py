@@ -121,6 +121,11 @@ class DetectTests(unittest.TestCase):
         self.assertEqual(cmd[0:4], ["/usr/bin/codex", "exec", "--skip-git-repo-check", "--ephemeral"])
         self.assertIn("-", cmd)
 
+    def test_codex_argv_can_write_the_output(self):
+        backend = ResolvedBackend("codex", "grok-imagine", "/usr/bin/codex")
+        cmd = argv_for(backend, "p.txt", "out.png", "16:9")
+        self.assertEqual(cmd[cmd.index("-s") + 1], "workspace-write")
+
 
 if __name__ == "__main__":
     unittest.main()
