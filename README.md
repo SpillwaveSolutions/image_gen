@@ -11,6 +11,8 @@ Cover images and in-article illustrations for technical articles.
 
 Hosts: **Claude Code**, **Codex**, **Grok Build**, **Cursor**, **SKILZ / Agent Plugins 1.0**.
 
+Claude Desktop, Cowork, and claude.ai use the portable edition in [`portable/`](portable/). It needs only a key file, no CLI. Zip that folder to upload it as a plugin.
+
 Not the diagram renderer. Mermaid and PlantUML go to [`imagen-diagrams`](https://github.com/SpillwaveSolutions/imagen-diagrams).
 
 ## Image-engine hint and backend (auto)
