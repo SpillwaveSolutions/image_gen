@@ -1,0 +1,14 @@
+{
+  "name": "image-gen",
+  "version": "3.0.0",
+  "description": "Cover images and in-article illustrations with Nano Banana (Gemini) or Grok Imagine. Works with a key file alone (no CLI), or with the imagen, grok-img, or codex CLIs.",
+  "author": {
+    "name": "Spillwave Solutions",
+    "email": "rick@spillwave.com",
+    "url": "https://spillwave.com"
+  },
+  "homepage": "https://github.com/SpillwaveSolutions/image_gen",
+  "repository": "https://github.com/SpillwaveSolutions/image_gen",
+  "license": "MIT",
+  "keywords": ["image-generation", "nano-banana", "gemini", "grok-imagine", "cover-image", "article"]
+}
