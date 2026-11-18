@@ -1,6 +1,6 @@
 {
   "name": "image-gen",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Cover images and in-article illustrations with Nano Banana (Gemini) or Grok Imagine. Works with a key file alone (no CLI), or with the imagen, grok-img, or codex CLIs.",
   "author": {
     "name": "Spillwave Solutions",

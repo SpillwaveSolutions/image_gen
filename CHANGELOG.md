@@ -1,5 +1,14 @@
 # Changelog
 
+## portable 3.0.1
+
+- Codex runs with `-s workspace-write`, so it can save the image. The same fix as 2.1.1 at the repo root.
+
+## portable 3.0.0
+
+- The portable edition for Claude Desktop, Cowork, and claude.ai, built from 2.1.0. It was a claude.ai upload only; it now lives in `portable/`.
+- REST backends `gemini-api` and `xai-api` that need only a key file, `check_setup.py`, and the `image-gen-setup` skill.
+
 ## 2.1.0
 
 - Add `--engine-hint imagen|grok|codex`.
